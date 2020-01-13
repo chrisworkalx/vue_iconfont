@@ -4,6 +4,12 @@
     <svg-icon icon-class="search" />
     <svg-icon icon-class="tool" />
     <svg-icon icon-class="finacingTest" />
+    <childComponent
+    :name="name"
+    :list="list"
+    :linkMsg="linkMsg"
+    >
+    </childComponent>
     <h1>{{ msg }}</h1>
     <h2>Essential Links</h2>
     <ul>
@@ -88,12 +94,22 @@
 </template>
 
 <script>
+import childComponent from './child'
 export default {
   name: 'HelloWorld',
   data () {
     return {
-      msg: 'Welcome to Your Vue.js App'
+      msg: 'Welcome to Your Vue.js App',
+      name: '你好我的子组件',
+      list: ['aaa', 'bbb', 'ccc'],
+      linkMsg: {
+        href: 'http://www.sina.com',
+        value: '新浪网'
+      }
     }
+  },
+  components: {
+    childComponent
   }
 }
 </script>

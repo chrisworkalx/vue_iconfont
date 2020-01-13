@@ -15,7 +15,13 @@ const env = process.env.NODE_ENV === 'testing'
   ? require('../config/test.env')
   : require('../config/prod.env')
 
+  // build/webpack.prod.conf.js 大概在15行
+const externalConfig = JSON.parse(JSON.stringify(utils.externalConfig)); // 读取配置
+const externalModules = utils.getExternalModules(externalConfig); // 获取到合适路径和忽略模块
+
+
 const webpackConfig = merge(baseWebpackConfig, {
+  externals: externalModules, // 构建时忽略的资源
   module: {
     rules: utils.styleLoaders({
       sourceMap: config.build.productionSourceMap,
@@ -48,7 +54,7 @@ const webpackConfig = merge(baseWebpackConfig, {
       filename: utils.assetsPath('css/[name].[contenthash].css'),
       // Setting the following option to `false` will not extract CSS from codesplit chunks.
       // Their CSS will instead be inserted dynamically with style-loader when the codesplit chunk has been loaded by webpack.
-      // It's currently set to `true` because we are seeing that sourcemaps are included in the codesplit bundle as well when it's `false`, 
+      // It's currently set to `true` because we are seeing that sourcemaps are included in the codesplit bundle as well when it's `false`,
       // increasing file size: https://github.com/vuejs-templates/webpack/issues/1110
       allChunks: true,
     }),
@@ -68,15 +74,23 @@ const webpackConfig = merge(baseWebpackConfig, {
         : config.build.index,
       template: 'index.html',
       inject: true,
+      favicon: path.join(__dirname, '..', 'favicon.ico'),
       minify: {
-        removeComments: true,
-        collapseWhitespace: true,
-        removeAttributeQuotes: true
+        // removeComments: true,
+        // collapseWhitespace: true,
+        // removeAttributeQuotes: true
+        //目的是让代码打包不压缩输出
+        removeComments: false,
+        collapseWhitespace: false,
+        removeAttributeQuotes: false
         // more options:
         // https://github.com/kangax/html-minifier#options-quick-reference
       },
       // necessary to consistently work with multiple chunks via CommonsChunkPlugin
-      chunksSortMode: 'dependency'
+      chunksSortMode: 'dependency',
+      // 其他默认配置
+      cdnConfig: externalConfig, // cdn配置
+      onlyCss: false, //加载css
     }),
     // keep module.id stable when vendor modules does not change
     new webpack.HashedModuleIdsPlugin(),
@@ -119,7 +133,16 @@ const webpackConfig = merge(baseWebpackConfig, {
         to: config.build.assetsSubDirectory,
         ignore: ['.*']
       }
-    ])
+    ]),
+
+    // 模拟看下打包从根目录下拷贝pages   到dist下面   本次纯属测试 与此次demo无关
+    // new CopyWebpackPlugin([
+    //   {
+    //     from: path.resolve(__dirname, '../pages'),
+    //     to: path.join(__dirname, '..', 'dist'),
+    //     ignore: ['.*']
+    //   }
+    // ])
   ]
 })
 

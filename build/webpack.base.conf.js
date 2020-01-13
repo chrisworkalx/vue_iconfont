@@ -20,7 +20,8 @@ const createLintingRule = () => ({
 })
 
 module.exports = {
-  context: path.resolve(__dirname, '../'),
+  //context表示打包的上下文
+  context: path.resolve(__dirname, '../'), //默认根目录中找文件
   entry: {
     app: './src/main.js'
   },
@@ -36,24 +37,30 @@ module.exports = {
     alias: {
       'vue$': 'vue/dist/vue.esm.js',
       '@': resolve('src'),
+      '~page': resolve('pages'),
+      'util': resolve('utils')
     }
   },
   module: {
     rules: [
-        {
-          test: /\.(js|vue)$/,
-          loader: 'eslint-loader',
-          enforce: 'pre',
-          include: [resolve('src'), resolve('test')],
-          options: {
-            formatter: require('eslint-friendly-formatter')
-          }
-       },
-      ...(config.dev.useEslint ? [createLintingRule()] : []),
+      //   {
+      //     test: /\.(js|vue)$/,
+      //     loader: 'eslint-loader',
+      //     enforce: 'pre',
+      //     include: [resolve('src'), resolve('test')],
+      //     options: {
+      //       formatter: require('eslint-friendly-formatter')
+      //     }
+      //  },
+      // ...(config.dev.useEslint ? [createLintingRule()] : []),
       {
         test: /\.vue$/,
         loader: 'vue-loader',
         options: vueLoaderConfig
+      },
+      {
+        test: /\.sass$/,
+        loaders: ['style', 'css', 'sass']
       },
       {
         test: /\.js$/,
